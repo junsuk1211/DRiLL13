@@ -30,8 +30,11 @@ def handle_events():
                 return
         elif event.type == SDL_KEYDOWN:
             choices = {SDLK_0: 0, SDLK_1: 1, SDLK_2: 2}
-            if event.key in choices:
+            if event.key in choices and not getattr(event, 'repeat', 0):
                 play_mode.boy.select_item(choices[event.key])
+        elif event.type == SDL_KEYUP:
+            # Track movement releases while the explanation is open.
+            play_mode.boy.handle_event(event)
 
 
 def update():
