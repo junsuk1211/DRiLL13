@@ -21,6 +21,11 @@ def handle_events():
                 import pause_mode
                 game_framework.push_mode(pause_mode)
                 return
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_i:
+            if not getattr(event, 'repeat', 0):
+                import item_mode
+                game_framework.push_mode(item_mode)
+                return
         else:
             boy.handle_event(event)
 

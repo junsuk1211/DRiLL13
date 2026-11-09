@@ -24,6 +24,10 @@ def handle_events():
         if event.type == SDL_QUIT:
             game_framework.quit()
             return
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_i:
+            if not getattr(event, 'repeat', 0):
+                game_framework.pop_mode()
+                return
         elif event.type == SDL_KEYDOWN:
             choices = {SDLK_0: 0, SDLK_1: 1, SDLK_2: 2}
             if event.key in choices:
