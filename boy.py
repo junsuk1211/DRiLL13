@@ -19,6 +19,8 @@ class Boy:
         self.dir = 0
         self.face_dir = 1
         self.pressed_keys = set()
+        self.selected_item = 0
+        self.last_shot_at = get_time()
 
         self.machine = Machine(
             model=self,
@@ -47,8 +49,17 @@ class Boy:
     def on_enter_RUN(self):
         self.frame = 0
 
+    def select_item(self, item):
+        if item not in (0, 1, 2):
+            raise ValueError('Item must be 0, 1, or 2')
+        self.selected_item = item
+        self.last_shot_at = get_time()
+
     def fire_ball(self):
-        ball = Ball(self.x, self.y, self.face_dir * 10)
+        if self.selected_item == 0:
+            return
+        size = 21 if self.selected_item == 1 else 41
+        ball = Ball(self.x, self.y, self.face_dir * 10, size)
         game_world.add_oject(ball)
 
     def handle_event(self, event):
