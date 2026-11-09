@@ -21,7 +21,8 @@ class Boy:
         self.dir = 0
         self.face_dir = 1
         self.pressed_keys = set()
-        self.selected_item = 0
+        # None: default manual fire; 0: disabled; 1/2: automatic fire.
+        self.selected_item = None
         self.last_shot_at = get_time()
 
         self.machine = Machine(
@@ -60,7 +61,7 @@ class Boy:
     def fire_ball(self):
         if self.selected_item == 0:
             return
-        size = 21 if self.selected_item == 1 else 41
+        size = 41 if self.selected_item == 2 else 21
         ball = Ball(self.x, self.y, self.face_dir * 10, size)
         game_world.add_oject(ball)
 

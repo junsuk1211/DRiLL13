@@ -53,6 +53,32 @@ class ItemModeTests(unittest.TestCase):
     def balls(self):
         return [o for layer in game_world.world for o in layer if isinstance(o, ball.Ball)]
 
+    def test_default_space_fires_normal_ball_without_automatic_fire(self):
+        self.assertIsNone(play_mode.boy.selected_item)
+        self.now = 1.0
+        play_mode.update()
+        self.assertEqual(self.balls(), [])
+        self.key(play_mode, pico2d.SDLK_SPACE)
+        self.assertEqual(len(self.balls()), 1)
+        self.assertEqual(self.balls()[0].size, 21)
+        self.assertEqual(self.balls()[0].velocity, 10)
+        self.now += 1.0
+        play_mode.update()
+        self.assertEqual(len(self.balls()), 1)
+        self.key(play_mode, pico2d.SDLK_LEFT)
+        self.key(play_mode, pico2d.SDLK_SPACE)
+        self.assertEqual(len(self.balls()), 2)
+        self.assertEqual(self.balls()[-1].velocity, -10)
+
+    def test_option_zero_disables_manual_fire_from_default(self):
+        self.key(play_mode, pico2d.SDLK_i)
+        self.key(item_mode, pico2d.SDLK_0)
+        self.key(item_mode, pico2d.SDLK_i)
+        self.key(play_mode, pico2d.SDLK_SPACE)
+        self.now = 1.0
+        play_mode.update()
+        self.assertEqual(self.balls(), [])
+
     def test_normal_large_and_disabled_automatic_fire(self):
         for selection, size in ((1, 21), (2, 41)):
             self.key(play_mode, pico2d.SDLK_i)
@@ -131,7 +157,7 @@ class ItemModeTests(unittest.TestCase):
         game_framework.pop_mode()
         play_mode.finish()
         play_mode.init()
-        self.assertEqual(play_mode.boy.selected_item, 0)
+        self.assertIsNone(play_mode.boy.selected_item)
         self.assertEqual(self.balls(), [])
 
 
