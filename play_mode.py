@@ -55,6 +55,8 @@ def pause():
 
 def resume():
     # Exclude paused time from the boy's idle-to-sleep timer.
-    boy.idle_started_at += get_time() - max(paused_at, boy.idle_started_at)
+    now = get_time()
+    boy.idle_started_at += now - max(paused_at, boy.idle_started_at)
+    boy.last_shot_at += now - max(paused_at, boy.last_shot_at)
 
 
