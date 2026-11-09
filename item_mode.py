@@ -7,16 +7,19 @@ import play_mode
 
 
 image = None
+font = None
 
 
 def init():
-    global image
+    global image, font
     image = load_image(str(Path(__file__).resolve().parent / 'item_select.png'))
+    font = load_font('C:/Windows/Fonts/malgun.ttf', 20)
 
 
 def finish():
-    global image
+    global image, font
     image = None
+    font = None
 
 
 def handle_events():
@@ -45,4 +48,8 @@ def render():
     clear_canvas()
     game_world.render()
     image.draw(get_canvas_width() / 2, get_canvas_height() / 2)
+    x = get_canvas_width() / 2 - 200
+    y = get_canvas_height() / 2 - 155
+    font.draw(x, y, 'I를 누르면 설명창이 열립니다.', (0, 0, 0))
+    font.draw(x, y - 30, 'I를 한 번 더 누르면 설명창이 닫힙니다.', (0, 0, 0))
     update_canvas()

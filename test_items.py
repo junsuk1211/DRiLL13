@@ -26,6 +26,7 @@ class ItemModeTests(unittest.TestCase):
         def image(path):
             self.assertTrue(Path(path).is_file())
             return SimpleNamespace(draw=lambda *a: None, clip_draw=lambda *a: None)
+        mock(item_mode, 'load_font', lambda *a: SimpleNamespace(draw=lambda *a: None))
         for module in (boy, play_mode):
             mock(module, 'get_time', lambda: self.now)
         for module in (boy, ball, grass, item_mode):
@@ -52,6 +53,21 @@ class ItemModeTests(unittest.TestCase):
 
     def balls(self):
         return [o for layer in game_world.world for o in layer if isinstance(o, ball.Ball)]
+
+    def test_item_overlay_displays_open_and_close_instructions(self):
+        self.key(play_mode, pico2d.SDLK_i)
+        lines = []
+        with patch.object(item_mode, 'clear_canvas'), \
+             patch.object(item_mode, 'update_canvas'), \
+             patch.object(item_mode, 'get_canvas_width', return_value=800), \
+             patch.object(item_mode, 'get_canvas_height', return_value=600), \
+             patch.object(game_world, 'render'), \
+             patch.object(item_mode.font, 'draw', side_effect=lambda x, y, text, color: lines.append(text)):
+            item_mode.render()
+        self.assertEqual(lines, ['I를 누르면 설명창이 열립니다.',
+                                 'I를 한 번 더 누르면 설명창이 닫힙니다.'])
+        self.key(item_mode, pico2d.SDLK_i)
+        self.assertIsNone(item_mode.font)
 
     def test_default_space_fires_normal_ball_without_automatic_fire(self):
         self.assertIsNone(play_mode.boy.selected_item)
