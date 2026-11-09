@@ -11,6 +11,8 @@ from ball import Ball
 
 
 class Boy:
+    FIRE_INTERVAL = 0.5
+
     def __init__(self):
         self.x, self.y = 400, 90
         self.frame = 0
@@ -97,6 +99,9 @@ class Boy:
             self.stop_run()
 
     def update(self):
+        if self.selected_item and get_time() - self.last_shot_at >= self.FIRE_INTERVAL:
+            self.fire_ball()
+            self.last_shot_at = get_time()
         if self.state == 'IDLE':
             if get_time() - self.idle_started_at >= 5.0:
                 self.fall_asleep()
