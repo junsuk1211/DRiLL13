@@ -79,7 +79,7 @@ class ItemModeTests(unittest.TestCase):
         play_mode.update()
         self.assertEqual(self.balls(), [])
 
-    def test_normal_large_and_disabled_automatic_fire(self):
+    def test_selected_size_only_fires_on_space(self):
         for selection, size in ((1, 21), (2, 41)):
             self.key(play_mode, pico2d.SDLK_i)
             self.key(item_mode, getattr(pico2d, f'SDLK_{selection}'))
@@ -90,6 +90,8 @@ class ItemModeTests(unittest.TestCase):
             self.assertEqual(len(self.balls()), count)
             self.now += 0.02
             play_mode.update()
+            self.assertEqual(len(self.balls()), count)
+            self.key(play_mode, pico2d.SDLK_SPACE)
             self.assertEqual(len(self.balls()), count + 1)
             self.assertEqual(self.balls()[-1].size, size)
         self.key(play_mode, pico2d.SDLK_i)
@@ -122,9 +124,11 @@ class ItemModeTests(unittest.TestCase):
         self.assertEqual(len(self.balls()), 1)
         self.now += 0.51
         play_mode.update()
+        self.assertEqual(len(self.balls()), 1)
+        self.key(play_mode, pico2d.SDLK_SPACE)
         self.assertEqual(len(self.balls()), 2)
 
-    def test_selection_during_menu_starts_cooldown_on_resume(self):
+    def test_selection_during_menu_waits_for_space_after_resume(self):
         self.key(play_mode, pico2d.SDLK_i)
         self.now = 5
         self.key(item_mode, pico2d.SDLK_2)
@@ -134,9 +138,11 @@ class ItemModeTests(unittest.TestCase):
         self.assertEqual(self.balls(), [])
         self.now += 0.51
         play_mode.update()
+        self.assertEqual(self.balls(), [])
+        self.key(play_mode, pico2d.SDLK_SPACE)
         self.assertEqual(self.balls()[0].size, 41)
 
-    def test_pause_still_freezes_automatic_fire(self):
+    def test_pause_resume_does_not_fire_selected_ball(self):
         play_mode.boy.select_item(1)
         self.key(play_mode, pico2d.SDLK_p)
         self.now = 30
@@ -147,6 +153,8 @@ class ItemModeTests(unittest.TestCase):
         self.assertEqual(self.balls(), [])
         self.now += 0.51
         play_mode.update()
+        self.assertEqual(self.balls(), [])
+        self.key(play_mode, pico2d.SDLK_SPACE)
         self.assertEqual(len(self.balls()), 1)
 
     def test_quit_from_item_mode_and_new_game_reset(self):

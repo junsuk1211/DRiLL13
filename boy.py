@@ -11,8 +11,6 @@ from ball import Ball
 
 
 class Boy:
-    FIRE_INTERVAL = 0.5
-
     def __init__(self):
         self.x, self.y = 400, 90
         self.frame = 0
@@ -21,9 +19,8 @@ class Boy:
         self.dir = 0
         self.face_dir = 1
         self.pressed_keys = set()
-        # None: default manual fire; 0: disabled; 1/2: automatic fire.
+        # None: default normal ball; 0: disabled; 1: normal; 2: large.
         self.selected_item = None
-        self.last_shot_at = get_time()
 
         self.machine = Machine(
             model=self,
@@ -56,7 +53,6 @@ class Boy:
         if item not in (0, 1, 2):
             raise ValueError('Item must be 0, 1, or 2')
         self.selected_item = item
-        self.last_shot_at = get_time()
 
     def fire_ball(self):
         if self.selected_item == 0:
@@ -100,9 +96,6 @@ class Boy:
             self.stop_run()
 
     def update(self):
-        if self.selected_item and get_time() - self.last_shot_at >= self.FIRE_INTERVAL:
-            self.fire_ball()
-            self.last_shot_at = get_time()
         if self.state == 'IDLE':
             if get_time() - self.idle_started_at >= 5.0:
                 self.fall_asleep()
